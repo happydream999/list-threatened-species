@@ -3,29 +3,24 @@ import { fetchRegions, fetchSpeciesByRegion } from "services";
 import { ISpecies, createSpecies } from "models/speciesModel";
 
 export async function getRegions(req: Request, res: Response) {
-  const { token } = req.query;
   try {
-    const regions = await fetchRegions(token);
+    const regions = await fetchRegions();
     res.json(regions);
-  } catch (error){ 
-    res.status(500).json({ error: "Failed to fetch regions" })
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch regions" });
   }
 }
 
 export async function getSpeciesByRegion(req: Request, res: Response) {
-  const { token, regionIdentifier } = req.query;
+  const { region } = req.query;
+  console.log(region)
+  if (!region) {
+    return res.status(400).json({ error: "Region is required" }); 
+  }
   try {
-      const speciesList = await fetchSpeciesByRegion(token, regionIdentifier);
-    //   const speciesWithConservation: ISpecies[] = await Promise.all(
-    //     speciesList.map(async (species: any) => {
-    //         const conservationMeasures = await fetchConservationMeasures(token, species.taxonid);
-    //         const measures = conservationMeasures.map((cm: any) => cm.title);
-    //         return createSpecies(species.scientific_name, species.taxonid, measures);
-    //     })
-    // );
-
-    res.json(speciesList);
+    const species = await fetchSpeciesByRegion(region as string);  //http://localhost:4000/species?region=europe
+    res.json(species);
   } catch (error) {
-      res.status(500).json({ error: `Failed to fetch species for region ${regionIdentifier}` });
+    res.status(500).json({ error: "Failed to fetch species for region" });
   }
 }
