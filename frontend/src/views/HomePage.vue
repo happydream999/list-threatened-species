@@ -1,11 +1,11 @@
 <template>
   <div class="container">
-    <nav class="navbar">
-      <RegionList :regions="regions" @regionSelected="handleRegionSelected" />
-    </nav>
-    <main class="content">
-      <SpeciesList :speciesList="speciesList" />
-    </main>
+    <div class="navbar">
+      <RegionList :regions="regions" @region-selected="handleRegionSelected" />
+    </div>
+    <div class="content">
+      <SpeciesList :speciesList="filteredSpeciesList" @show-all="showAllSpecies" @filter-cr="filterCRSpecies" />
+    </div>
   </div>
 </template>
 
@@ -14,6 +14,7 @@ import { defineComponent, ref, onMounted } from 'vue';
 import RegionList from '@/components/RegionList.vue';
 import SpeciesList from '@/components/SpeciesList.vue';
 import { fetchRegions, fetchSpeciesByRegion } from '../services/iucnApiService';
+import { Species } from '@/types';
 
 export default defineComponent({
   name: 'HomePage',
@@ -23,22 +24,35 @@ export default defineComponent({
   },
   setup() {
     const regions = ref([]);
-    const speciesList = ref([]);
+    const speciesList = ref<Species[]>([]);
+    const filteredSpeciesList = ref<Species[]>([]);
 
-    const handleRegionSelected = async (region: string) => {
-      const speciesData = await fetchSpeciesByRegion(region);
+    const handleRegionSelected = async (regionIdentifier: string) => {
+      const speciesData = await fetchSpeciesByRegion(regionIdentifier);
       speciesList.value = speciesData;
+      filteredSpeciesList.value = speciesList.value;
+    };
+
+    const showAllSpecies = () => {
+      filteredSpeciesList.value = speciesList.value;
+    };
+
+    const filterCRSpecies = () => {
+      filteredSpeciesList.value = speciesList.value.filter(species => species.category === 'CR');
     };
 
     onMounted(async () => {
       const regionsData = await fetchRegions();
-      regions.value = regionsData.results;
+      regions.value = regionsData;
     });
 
     return {
       regions,
       speciesList,
+      filteredSpeciesList,
       handleRegionSelected,
+      showAllSpecies,
+      filterCRSpecies,
     };
   },
 });
@@ -47,20 +61,17 @@ export default defineComponent({
 <style scoped>
 .container {
   display: flex;
-  height: 100vh;
 }
 
 .navbar {
-  width: 200px;
-  background-color: #f4f4f4;
+  width: 20%;
+  background-color: #f8f8f8;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
+  border-right: 1px solid #ddd;
 }
 
 .content {
-  flex: 1;
+  width: 80%;
   padding: 20px;
-  overflow-y: auto;
 }
 </style>

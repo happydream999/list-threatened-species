@@ -1,12 +1,11 @@
 <template>
-  <div>
-    <h2>Species List</h2>
-    <div class="filter-buttons">
-      <button @click="showAllSpecies">Show All</button>
-      <button @click="showCRSpecies">Show Critically Endangered (CR)</button>
+  <div class="species-list-container">
+    <div class="button-container">
+      <button class="btn" @click="showAll">Show All</button>
+      <button class="btn" @click="filterCR">Show Critically Endangered</button>
     </div>
     <ul class="species-list">
-      <li v-for="species in filteredSpeciesList" :key="species.taxonid">
+      <li v-for="species in speciesList" :key="species.taxonid" class="species-item">
         {{ species.scientific_name }}
       </li>
     </ul>
@@ -14,65 +13,73 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from 'vue';
+import { defineComponent, PropType } from 'vue';
+import { Species } from '@/types';
 
 export default defineComponent({
   name: 'SpeciesList',
   props: {
     speciesList: {
-      type: Array as PropType<Array<{ taxonid: string; scientific_name: string; category: string }>>,
+      type: Array as PropType<Species[]>,
       required: true,
     },
   },
-  setup(props) {
-    const filteredSpeciesList = ref(props.speciesList);
-
-    const showAllSpecies = () => {
-      filteredSpeciesList.value = props.speciesList;
-    };
-
-    const showCRSpecies = () => {
-      filteredSpeciesList.value = props.speciesList.filter(species => species.category === "CR");
-    };
-
-    return {
-      filteredSpeciesList,
-      showAllSpecies,
-      showCRSpecies,
-    };
+  emits: ['show-all', 'filter-cr'],
+  methods: {
+    showAll() {
+      this.$emit('show-all');
+    },
+    filterCR() {
+      this.$emit('filter-cr');
+    },
   },
 });
 </script>
 
 <style scoped>
-.filter-buttons {
+.species-list-container {
+  padding: 20px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.filter-buttons button {
-  margin-right: 10px;
+.btn {
   padding: 10px 20px;
-  border: none;
-  border-radius: 4px;
   background-color: #007bff;
   color: #fff;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s;
 }
 
-.filter-buttons button:hover {
+.btn:hover {
   background-color: #0056b3;
 }
 
-.species-list li {
-  padding: 10px;
-  margin: 5px 0;
-  background-color: #e9e9e9;
-  border-radius: 4px;
-  transition: background-color 0.3s ease;
+.species-list {
+  list-style-type: none;
+  padding: 0;
 }
 
-.species-list li:hover {
-  background-color: #d1d1d1;
+.species-item {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: transform 0.3s;
+}
+
+.species-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>
