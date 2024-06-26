@@ -1,59 +1,88 @@
 <template>
   <div class="container">
     <nav class="navbar">
-      <RegionList @regionSelected="fetchSpecies" />
+      <RegionList :regions="regions" @region-selected="handleRegionSelected" />
     </nav>
     <main class="content">
-      <SpeciesList :speciesList="speciesList" />
+      <SpeciesList :speciesList="filteredSpeciesList" @show-all="showAllSpecies" @filter-cr="filterCRSpecies" />
     </main>
+    <LoadingSpinner :loading="loading" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import RegionList from '@/components/RegionList.vue';
 import SpeciesList from '@/components/SpeciesList.vue';
+import LoadingSpinner from '@/components/common/Spinner.vue';
 import { fetchRegions, fetchSpeciesByRegion } from '../services/iucnApiService';
+import { Species } from '@/types';
+
 export default defineComponent({
   name: 'HomePage',
   components: {
     RegionList,
     SpeciesList,
+    LoadingSpinner
   },
-  data() {
-    return {
-      speciesList: [] as Array<{ taxonid: string; scientific_name: string }>,
+  setup() {
+    const regions = ref([]);
+    const speciesList = ref<Species[]>([]);
+    const filteredSpeciesList = ref<Species[]>([]);
+    const loading = ref(false);
+
+
+
+    const handleRegionSelected = async (regionIdentifier: string) => {
+      loading.value = true;
+      const speciesData = await fetchSpeciesByRegion(regionIdentifier);
+      speciesList.value = speciesData;
+      filteredSpeciesList.value = speciesList.value;
+      loading.value = false;
     };
-  },
-  methods: {
-    async fetchSpecies(region: string) {
-      this.speciesList = await fetchSpeciesByRegion(region);
-    },
-  },
-  async created() {
-    await fetchRegions();
+
+    const showAllSpecies = () => {
+      filteredSpeciesList.value = speciesList.value;
+    };
+
+    const filterCRSpecies = () => {
+      filteredSpeciesList.value = speciesList.value.filter(species => species.category === 'CR');
+    };
+
+    onMounted(async () => {
+      loading.value = true;
+      const regionsData = await fetchRegions();
+      regions.value = regionsData;
+      loading.value = false;
+    });
+
+    return {
+      regions,
+      speciesList,
+      filteredSpeciesList,
+      loading,
+      handleRegionSelected,
+      showAllSpecies,
+      filterCRSpecies,
+    };
   },
 });
 </script>
 
-
 <style scoped>
 .container {
   display: flex;
-  height: 100vh;
 }
 
 .navbar {
-  width: 200px;
-  background-color: #f4f4f4;
+  width: 20%;
+  background-color: #f8f8f8;
   padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  overflow-y: auto;
+  border-right: 1px solid #ddd;
 }
 
 .content {
-  flex: 1;
+  width: 80%;
   padding: 20px;
-  overflow-y: auto;
 }
 </style>
