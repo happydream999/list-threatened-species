@@ -22,7 +22,7 @@ export default defineComponent({
   },
   data() {
     return {
-      speciesList: [] as Array<{ taxonid: string; scientific_name: string }>,
+      speciesList: [] as Array<{ taxonid: string; scientific_name: string; category: string }>,
     };
   },
   methods: {
@@ -35,7 +35,6 @@ export default defineComponent({
   },
 });
 </script>
-
 
 <style scoped>
 .container {
