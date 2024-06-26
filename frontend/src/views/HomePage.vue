@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <nav class="navbar">
-      <RegionList @regionSelected="fetchSpecies" />
+      <RegionList :regions="regions" @regionSelected="handleRegionSelected" />
     </nav>
     <main class="content">
       <SpeciesList :speciesList="speciesList" />
@@ -10,28 +10,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import RegionList from '@/components/RegionList.vue';
 import SpeciesList from '@/components/SpeciesList.vue';
 import { fetchRegions, fetchSpeciesByRegion } from '../services/iucnApiService';
+
 export default defineComponent({
   name: 'HomePage',
   components: {
     RegionList,
     SpeciesList,
   },
-  data() {
-    return {
-      speciesList: [] as Array<{ taxonid: string; scientific_name: string; category: string }>,
+  setup() {
+    const regions = ref([]);
+    const speciesList = ref([]);
+
+    const handleRegionSelected = async (region: string) => {
+      const speciesData = await fetchSpeciesByRegion(region);
+      speciesList.value = speciesData;
     };
-  },
-  methods: {
-    async fetchSpecies(region: string) {
-      this.speciesList = await fetchSpeciesByRegion(region);
-    },
-  },
-  async created() {
-    await fetchRegions();
+
+    onMounted(async () => {
+      const regionsData = await fetchRegions();
+      regions.value = regionsData.results;
+    });
+
+    return {
+      regions,
+      speciesList,
+      handleRegionSelected,
+    };
   },
 });
 </script>
