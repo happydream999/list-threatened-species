@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { fetchRegions, fetchSpeciesByRegion } from "services";
+import { ISpecies, createSpecies } from "models/speciesModel";
 
-async function getRegions(req: Request, res: Response) {
+export async function getRegions(req: Request, res: Response) {
   const { token } = req.query;
   try {
     const regions = await fetchRegions(token);
@@ -11,15 +12,19 @@ async function getRegions(req: Request, res: Response) {
   }
 }
 
-async function getSpeciesByRegion(req: Request, res: Response) {
+export async function getSpeciesByRegion(req: Request, res: Response) {
   const { token, regionIdentifier } = req.query;
   try {
       const speciesList = await fetchSpeciesByRegion(token, regionIdentifier);
-      // Mapping results to Species model
-      const speciesArray = speciesList.map(species => {
-          return new species(species.name, species.identifier);
-      });
-      res.json(speciesArray);
+    //   const speciesWithConservation: ISpecies[] = await Promise.all(
+    //     speciesList.map(async (species: any) => {
+    //         const conservationMeasures = await fetchConservationMeasures(token, species.taxonid);
+    //         const measures = conservationMeasures.map((cm: any) => cm.title);
+    //         return createSpecies(species.scientific_name, species.taxonid, measures);
+    //     })
+    // );
+
+    res.json(speciesList);
   } catch (error) {
       res.status(500).json({ error: `Failed to fetch species for region ${regionIdentifier}` });
   }
