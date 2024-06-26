@@ -24,12 +24,13 @@ const API_URL = 'http://localhost:4000/';
 
 
 export async function fetchRegions() {
-  const response = await axios.get('http://localhost:4000/region');
-  return response.data.results;
+  const response = await axios.get('http://localhost:4000/regions');
+  return response.data;
 }
 
 export async function fetchSpeciesByRegion(region: string) {
   const response = await axios.get(`http://localhost:4000/species?region=${region}`);
-  return response.data.result;
+  console.log(response.data)
+  return response.data;
 }
 
