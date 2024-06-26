@@ -1,11 +1,12 @@
 <template>
   <div class="container">
-    <div class="navbar">
+    <nav class="navbar">
       <RegionList :regions="regions" @region-selected="handleRegionSelected" />
-    </div>
-    <div class="content">
+    </nav>
+    <main class="content">
       <SpeciesList :speciesList="filteredSpeciesList" @show-all="showAllSpecies" @filter-cr="filterCRSpecies" />
-    </div>
+    </main>
+    <LoadingSpinner :loading="loading" />
   </div>
 </template>
 
@@ -13,6 +14,7 @@
 import { defineComponent, ref, onMounted } from 'vue';
 import RegionList from '@/components/RegionList.vue';
 import SpeciesList from '@/components/SpeciesList.vue';
+import LoadingSpinner from '@/components/common/Spinner.vue';
 import { fetchRegions, fetchSpeciesByRegion } from '../services/iucnApiService';
 import { Species } from '@/types';
 
@@ -21,16 +23,22 @@ export default defineComponent({
   components: {
     RegionList,
     SpeciesList,
+    LoadingSpinner
   },
   setup() {
     const regions = ref([]);
     const speciesList = ref<Species[]>([]);
     const filteredSpeciesList = ref<Species[]>([]);
+    const loading = ref(false);
+
+
 
     const handleRegionSelected = async (regionIdentifier: string) => {
+      loading.value = true;
       const speciesData = await fetchSpeciesByRegion(regionIdentifier);
       speciesList.value = speciesData;
       filteredSpeciesList.value = speciesList.value;
+      loading.value = false;
     };
 
     const showAllSpecies = () => {
@@ -42,14 +50,17 @@ export default defineComponent({
     };
 
     onMounted(async () => {
+      loading.value = true;
       const regionsData = await fetchRegions();
       regions.value = regionsData;
+      loading.value = false;
     });
 
     return {
       regions,
       speciesList,
       filteredSpeciesList,
+      loading,
       handleRegionSelected,
       showAllSpecies,
       filterCRSpecies,
