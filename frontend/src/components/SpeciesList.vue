@@ -5,36 +5,55 @@
       <button class="btn" @click="filterCR">Show Critically Endangered</button>
       <button class="btn" @click="filterMM">Show Mammals</button>
     </div>
-    <ul class="species-list">
-      <li v-for="species in speciesList" :key="species.taxonid" class="species-item">
+    <ul v-if="cr" class="species-list">
+      <li
+        v-for="species in speciesList"
+        :key="species.taxonid"
+        class="species-item"
+      >
         {{ species.scientific_name }}
+      </li>
+    </ul>
+    <ul v-else class="species-list">
+      <li
+        v-for="species in crList"
+        :key="species.identifier"
+        class="species-item"
+      >
+        <p>{{ species.name }}</p>
+        <p>{{ species.conservationMeasures }}</p>
       </li>
     </ul>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { Species } from '@/types';
+import { defineComponent, PropType } from "vue";
+import { Measure, Species } from "@/types";
 
 export default defineComponent({
-  name: 'SpeciesList',
+  name: "SpeciesList",
   props: {
     speciesList: {
       type: Array as PropType<Species[]>,
       required: true,
     },
+    crList: {
+      type: Array as PropType<Measure[]>,
+      required: true,
+    },
+    cr: Boolean,
   },
-  emits: ['show-all', 'filter-cr', 'filter-mm'],
+  emits: ["show-all", "filter-cr", "filter-mm"],
   methods: {
     showAll() {
-      this.$emit('show-all');
+      this.$emit("show-all");
     },
     filterCR() {
-      this.$emit('filter-cr');
+      this.$emit("filter-cr");
     },
     filterMM() {
-      this.$emit('filter-mm');
+      this.$emit("filter-mm");
     },
   },
 });
@@ -80,6 +99,9 @@ export default defineComponent({
   border-radius: 4px;
   margin-bottom: 10px;
   transition: transform 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .species-item:hover {

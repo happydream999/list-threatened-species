@@ -10,13 +10,11 @@ export interface Region {
   identifier: string;
 }
 
-// export interface Species {
-//   taxonid: number;
-//   scientific_name: string;
-//   category: string;
-// }
+export interface Measure {
+  name: string;
+  identifier: string;
+  category: string;
+  conservationMeasures:string;
+}
 
-// export interface Region {
-//   name: string;
-//   identifier: string;
-// }
+                                                                                                                                                                                                                                                                                                  
