@@ -28,7 +28,7 @@ export async function getSpeciesByRegion(req: Request, res: Response) {
 export const getSpeciesByCR = async (req: Request, res: Response) => {
   const { region } = req.query;
   let speciesList = (await fetchSpeciesByRegion(region as string)).slice(0, 24);
-  console.log(speciesList)
+
   // Map to Species model and filter critically endangered
   speciesList = speciesList.map((species: any) => ({
     name: species.scientific_name,
@@ -38,7 +38,7 @@ export const getSpeciesByCR = async (req: Request, res: Response) => {
 
   const criticallyEndangeredSpecies = speciesList.filter((species: Species) => species.category === 'CR');
   for (let species of criticallyEndangeredSpecies) {
-    const measures = await fetchConservationMeasures(species.name);
+    const measures = await fetchConservationMeasures(species.name, region as string);
     species.conservationMeasures = measures.map((measure: any) => measure.title).join(', ');
   }
   res.json(criticallyEndangeredSpecies);

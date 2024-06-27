@@ -31,9 +31,9 @@ export async function fetchSpeciesByRegion(regionIdentifier) {
   }
 }
 
-export const fetchConservationMeasures = async (speciesIdentifier: string) => {
+export const fetchConservationMeasures = async (name: string, region: string) => {
   const response = await axios.get(
-    `${apiUrl}/measures/species/name/${speciesIdentifier}?token=${token}`
+    `${apiUrl}/measures/species/name/${name}/region/${region}?token=${token}`
   );
   return response.data.result;
 };
