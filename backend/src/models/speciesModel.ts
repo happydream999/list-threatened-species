@@ -1,4 +1,4 @@
-interface ConservationMeasure {
+export interface ConservationMeasure {
   code: string;
   title: string;
 }
