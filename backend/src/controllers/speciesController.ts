@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { fetchRegions, fetchSpeciesByRegion, fetchConservationMeasures } from "services";
-import { Species } from "models/speciesModel";
+import { Species, ConservationMeasure } from "models/speciesModel";
 
 export async function getRegions(req: Request, res: Response) {
   try {
@@ -18,7 +18,7 @@ export async function getSpeciesByRegion(req: Request, res: Response) {
     return res.status(400).json({ error: "Region is required" }); 
   }
   try {
-    const species = await fetchSpeciesByRegion(region as string);  //http://localhost:4000/species?region=europe
+    const species = (await fetchSpeciesByRegion(region as string)).slice(0, 24);  //http://localhost:4000/species?region=europe
     res.json(species);
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch species for region" });
@@ -26,22 +26,23 @@ export async function getSpeciesByRegion(req: Request, res: Response) {
 }
 
 export const getSpeciesByCR = async (req: Request, res: Response) => {
-  const { regionIdentifier } = req.query;
-  let speciesList = await fetchSpeciesByRegion(regionIdentifier);
-  
+  const { region } = req.query;
+  let speciesList = (await fetchSpeciesByRegion(region as string)).slice(0, 24);
+  console.log(speciesList)
   // Map to Species model and filter critically endangered
   speciesList = speciesList.map((species: any) => ({
     name: species.scientific_name,
     identifier: species.taxonid,
     category: species.category,
-    conservationMeasures: ''
   }));
 
   const criticallyEndangeredSpecies = speciesList.filter((species: Species) => species.category === 'CR');
-
   for (let species of criticallyEndangeredSpecies) {
-    const measures = await fetchConservationMeasures(species.identifier);
+    const measures = await fetchConservationMeasures(species.name);
     species.conservationMeasures = measures.map((measure: any) => measure.title).join(', ');
   }
   res.json(criticallyEndangeredSpecies);
 };
+
+
+
