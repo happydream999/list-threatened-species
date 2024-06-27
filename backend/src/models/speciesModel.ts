@@ -1,9 +1,11 @@
-export interface ISpecies {
+export interface ConservationMeasure {
+  code: string;
+  title: string;
+}
+export interface Species {
   name: string;
   identifier: string;
-  conservationMeasures: string[];
-}
-
-export function createSpecies(name: string, identifier: string, conservationMeasures: string[]): ISpecies {
-  return { name, identifier, conservationMeasures };
+  category: string;
+  class: string;
+  conservationMeasures: ConservationMeasure[];
 }

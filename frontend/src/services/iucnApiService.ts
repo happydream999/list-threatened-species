@@ -30,7 +30,11 @@ export async function fetchRegions() {
 
 export async function fetchSpeciesByRegion(region: string) {
   const response = await axios.get(`http://localhost:4000/species?region=${region}`);
-  console.log(response.data)
+  return response.data;
+}
+
+export async function fetchSpeciesByCR(region: string) {
+  const response = await axios.get(`http://localhost:4000/measures?region=${region}`);
   return response.data;
 }
 
