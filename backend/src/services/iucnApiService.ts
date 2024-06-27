@@ -8,7 +8,7 @@ const token = process.env.API_TOKEN;
 
 export async function fetchRegions() {
   try {
-    const response = await axios.get(`${apiUrl}/v3/region/list?token=${token}`);
+    const response = await axios.get(`${apiUrl}/region/list?token=${token}`);
     return response.data.results;
   } catch (error) {
     console.log("Error fetching regions", error);

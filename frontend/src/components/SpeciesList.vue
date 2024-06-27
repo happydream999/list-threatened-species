@@ -3,6 +3,7 @@
     <div class="button-container">
       <button class="btn" @click="showAll">Show All</button>
       <button class="btn" @click="filterCR">Show Critically Endangered</button>
+      <button class="btn" @click="filterMM">Show Mammals</button>
     </div>
     <ul class="species-list">
       <li v-for="species in speciesList" :key="species.taxonid" class="species-item">
@@ -24,13 +25,16 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['show-all', 'filter-cr'],
+  emits: ['show-all', 'filter-cr', 'filter-mm'],
   methods: {
     showAll() {
       this.$emit('show-all');
     },
     filterCR() {
       this.$emit('filter-cr');
+    },
+    filterMM() {
+      this.$emit('filter-mm');
     },
   },
 });

@@ -4,7 +4,7 @@
       <RegionList :regions="regions" @region-selected="handleRegionSelected" />
     </nav>
     <main class="content">
-      <SpeciesList :speciesList="filteredSpeciesList" @show-all="showAllSpecies" @filter-cr="filterCRSpecies" />
+      <SpeciesList :speciesList="filteredSpeciesList" @show-all="showAllSpecies" @filter-cr="filterCRSpecies" @filter-mm="filterMMSpecies"/>
     </main>
     <LoadingSpinner :loading="loading" />
   </div>
@@ -47,6 +47,14 @@ export default defineComponent({
 
     const filterCRSpecies = () => {
       filteredSpeciesList.value = speciesList.value.filter(species => species.category === 'CR');
+      console.log(filteredSpeciesList.value)
+      console.log("dd")
+    };
+
+    const filterMMSpecies = () => {
+      filteredSpeciesList.value = speciesList.value.filter(species => species.class_name === 'MAMMALIA');
+      console.log(filteredSpeciesList.value)
+      console.log("mamali")
     };
 
     onMounted(async () => {
@@ -64,6 +72,7 @@ export default defineComponent({
       handleRegionSelected,
       showAllSpecies,
       filterCRSpecies,
+      filterMMSpecies
     };
   },
 });
