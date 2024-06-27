@@ -6,9 +6,6 @@ export interface Species {
   name: string;
   identifier: string;
   category: string;
+  class: string;
   conservationMeasures: ConservationMeasure[];
 }
-
-// export function createSpecies(name: string, identifier: string, conservationMeasures: string[]): ISpecies {
-//   return { name, identifier, conservationMeasures };
-// }
