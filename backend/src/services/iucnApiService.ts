@@ -27,3 +27,5 @@ export async function fetchSpeciesByRegion(regionIdentifier) {
     throw error;
   }
 }
+
+

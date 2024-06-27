@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { fetchRegions, fetchSpeciesByRegion } from "services";
-import { ISpecies, createSpecies } from "models/speciesModel";
 
 export async function getRegions(req: Request, res: Response) {
   try {
