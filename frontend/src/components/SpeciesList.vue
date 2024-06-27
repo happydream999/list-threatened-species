@@ -5,6 +5,8 @@
       <button class="btn" @click="filterCR">Show Critically Endangered</button>
       <button class="btn" @click="filterMM">Show Mammals</button>
     </div>
+    <hr />
+    <button @click="exportCSV" class="btn">Export to CSV</button>
     <ul v-if="cr" class="species-list">
       <li
         v-for="species in speciesList"
@@ -30,6 +32,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
 import { Measure, Species } from "@/types";
+import Papa from "papaparse";
 
 export default defineComponent({
   name: "SpeciesList",
@@ -55,6 +58,30 @@ export default defineComponent({
     filterMM() {
       this.$emit("filter-mm");
     },
+    exportCSV(){
+      if(this.cr){
+        const csvContent = Papa.unparse(this.speciesList);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'speciesList.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+      else{
+        const csvContent = Papa.unparse(this.crList);
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.setAttribute('href', url);
+        link.setAttribute('download', 'speciesList.csv');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    }
   },
 });
 </script>
